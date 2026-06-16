@@ -83,7 +83,6 @@ def main():
                 return
             
         
-
         if kk_rct.colliderect(bb_rct):
             gameover(screen)
             return
