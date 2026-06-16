@@ -1,6 +1,7 @@
 import os
 import random
 import sys
+import time
 import pygame as pg
 
 
@@ -28,6 +29,24 @@ def check_bound(rct: pg.Rect) ->tuple[bool, bool]:
     return yoko, tate
 
 
+def gameover(screen: pg.Surface) -> None:
+    go_img = pg.Surface((WIDTH, HEIGHT))
+    pg.draw.rect(go_img, (0, 0, 0), pg.Rect(0, 0, WIDTH, HEIGHT))
+    go_img.set_alpha(180)
+    
+    fonto = pg.font.Font(None, 50)
+    txt = fonto.render("Game Over", True, (255, 255, 255))
+    go_img.blit(txt, [WIDTH // 2 -150, HEIGHT // 2 - 40])
+
+    kk_img1 = pg.image.load("fig/0.png")
+    go_img.blit(kk_img1, [WIDTH // 2 + 150, HEIGHT // 2 - 40])
+    go_img.blit(kk_img1, [WIDTH // 2 - 250, HEIGHT // 2 - 40])
+    screen.blit(go_img, [0, 0])
+    pg.display.update()
+    time.sleep(5)
+    
+
+
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -39,7 +58,7 @@ def main():
 
     bb_img = pg.Surface((20, 20))#爆弾用の空のSurfaceを作成している
     pg.draw.circle(bb_img, (255, 0, 0), (10, 10), 10)#半径10の赤い円を描画
-    bb_rct = kk_img.get_rect()#爆弾Rect
+    bb_rct = bb_img.get_rect()#爆弾Rect
     bb_rct.center = random.randint(0, WIDTH),random.randint(0, HEIGHT)#横初期座標、縦初期座標
     vx, vy = +5, +5
 
@@ -50,9 +69,10 @@ def main():
             if event.type == pg.QUIT: 
                 return
         if kk_rct.colliderect(bb_rct):
-            print("game over")
+            gameover(screen)
             return
-        screen.blit(bg_img, [0, 0]) 
+        
+        screen.blit(bg_img, [0, 0])
 
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
