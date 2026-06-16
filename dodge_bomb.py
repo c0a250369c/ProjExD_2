@@ -44,7 +44,16 @@ def gameover(screen: pg.Surface) -> None:
     screen.blit(go_img, [0, 0])
     pg.display.update()
     time.sleep(5)
-    
+
+
+def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    bb_imgs = []
+    for r in range(1, 11):
+        bb_img = pg.Surface((20*r, 20*r))
+        pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
+        bb_imgs.append(bb_img)
+    bb_accs = [a for a in range(1, 11)]
+    return bb_imgs, bb_accs
 
 
 def main():
@@ -64,10 +73,17 @@ def main():
 
     clock = pg.time.Clock()
     tmr = 0
+
+    
+    bb_imgs, bb_accs =init_bb_imgs()
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
+            
+        
+
         if kk_rct.colliderect(bb_rct):
             gameover(screen)
             return
@@ -88,9 +104,12 @@ def main():
             if key_lst[key]:
                 sum_mv[0] += mv[0]#横方向の移動量
                 sum_mv[1] += mv[1]#縦方向の移動量
+
         kk_rct.move_ip(sum_mv)
+
         if check_bound(kk_rct) != (True, True):
             kk_rct.move_ip(-sum_mv[0], -sum_mv[1])#動きをなかったことにする
+        
         screen.blit(kk_img, kk_rct)
 
         bb_rct.move_ip(vx, vy)
@@ -99,6 +118,10 @@ def main():
             vx *= -1
         if not tate:
             vy *= -1
+        avx = vx*bb_accs[min(tmr//500, 9)] 
+        avy = vy*bb_accs[min(tmr//500, 9)]
+        bb_img = bb_imgs[min(tmr//500, 9)]
+        bb_rct.move_ip(avx, avy)
         screen.blit(bb_img, bb_rct)
 
         pg.display.update()
